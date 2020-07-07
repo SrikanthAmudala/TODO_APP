@@ -1,0 +1,27 @@
+version: '3'
+
+services:
+  web:
+    build: ./TODO_APP
+    command: gunicorn -c gunicorn.conf TODO_APP.wsgi 
+    volumes:
+      - ./TODO_APP:/TODO_APP
+    ports:
+      - "8000:8000"
+    depends_on: 
+      - db
+      
+  db:
+    image: postgres:12.0-alpine
+    
+  nginx:
+    build: ./nginx
+    depends_on:
+      - web
+    command: nginx -g 'daemon off;'
+    ports:
+      - "80:80"
+    volumes:
+      - ./TODO_APP/static:/var/www/static
+      - ./TODO_APP/media:/var/www/media
+  
